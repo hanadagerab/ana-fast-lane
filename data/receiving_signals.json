@@ -1,0 +1,26 @@
+[
+  {
+    "case_id": "ANA_CASE_1",
+    "reference": "SPEI-48392",
+    "independent_receiving_side_signal": true,
+    "signal_type": "pre_existing_internal_risk_flag",
+    "signal_source": "synthetic_receiving_institution_data",
+    "simulated": true
+  },
+  {
+    "case_id": "ANA_CASE_2",
+    "reference": "SPEI-58417",
+    "independent_receiving_side_signal": false,
+    "signal_type": "none",
+    "signal_source": "synthetic_receiving_institution_data",
+    "simulated": true
+  },
+  {
+    "case_id": "ANA_CASE_3",
+    "reference": "SPEI-73105",
+    "independent_receiving_side_signal": true,
+    "signal_type": "recent_independent_fraud_report",
+    "signal_source": "synthetic_receiving_institution_data",
+    "simulated": true
+  }
+]

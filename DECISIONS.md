@@ -166,3 +166,71 @@ Not completed yet.
 ## Session Close
 
 Not completed yet.
+
+---
+
+## Phase 2 — Synthetic Institutional Environment
+
+Status: Completed
+
+### Synthetic transaction data
+
+Created:
+
+`data/transactions.json`
+
+The dataset contains the three locked demo cases:
+
+- ANA_CASE_1
+- ANA_CASE_2
+- ANA_CASE_3
+
+Each transaction is explicitly synthetic and contains only prototype data.
+
+No real SPEI, banking, personal, recipient, or institutional data is used.
+
+### Independent receiving-side signals
+
+Created:
+
+`data/receiving_signals.json`
+
+Receiving-side signals are intentionally stored separately from Ana's report and from the transaction dataset.
+
+This separation preserves the locked authority principle:
+
+**Ana's allegation alone cannot create the independent evidence required for preservation.**
+
+The receiving-side signal dataset contains:
+
+- ANA_CASE_1 → `pre_existing_internal_risk_flag`
+- ANA_CASE_2 → `none`
+- ANA_CASE_3 → `recent_independent_fraud_report`
+
+All receiving-side institutional signals are synthetic and marked:
+
+`"simulated": true`
+
+### Locked demo behavior
+
+The synthetic data supports the following future deterministic outcomes:
+
+- Case 1 → fast + corroborated
+- Case 2 → fast + uncorroborated
+- Case 3 → too late
+
+No preservation decision logic has been implemented in this phase.
+
+### Scope boundary
+
+Phase 2 does not include:
+
+- transaction verification logic;
+- timeliness logic;
+- Gemini integration;
+- AI evidence structuring;
+- preservation authorization;
+- countdown;
+- expiry;
+- escalation.
+

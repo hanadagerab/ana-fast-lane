@@ -1,0 +1,38 @@
+[
+  {
+    "case_id": "ANA_CASE_1",
+    "reference": "SPEI-48392",
+    "amount": 18500,
+    "currency": "MXN",
+    "recipient": "Cuenta terminada en 2714",
+    "transfer_age_minutes_at_report": 12,
+    "transaction_exists": true,
+    "transaction_matches": true,
+    "funds_status": "available_for_simulated_preservation",
+    "simulated": true
+  },
+  {
+    "case_id": "ANA_CASE_2",
+    "reference": "SPEI-58417",
+    "amount": 12400,
+    "currency": "MXN",
+    "recipient": "Cuenta terminada en 6408",
+    "transfer_age_minutes_at_report": 8,
+    "transaction_exists": true,
+    "transaction_matches": true,
+    "funds_status": "available",
+    "simulated": true
+  },
+  {
+    "case_id": "ANA_CASE_3",
+    "reference": "SPEI-73105",
+    "amount": 22600,
+    "currency": "MXN",
+    "recipient": "Cuenta terminada en 9032",
+    "transfer_age_minutes_at_report": 47,
+    "transaction_exists": true,
+    "transaction_matches": true,
+    "funds_status": "already_moved",
+    "simulated": true
+  }
+]
