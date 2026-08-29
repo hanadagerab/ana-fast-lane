@@ -234,3 +234,94 @@ Phase 2 does not include:
 - expiry;
 - escalation.
 
+
+---
+
+## Phase 3 — Transaction Verification + Timeliness
+
+Status: Completed
+
+### Transaction verification
+
+Created:
+
+`verification.py`
+
+The module verifies Ana's reported transaction against the local synthetic transaction dataset.
+
+Verification requires:
+
+- transaction reference exists;
+- transaction is marked as existing;
+- reference matches;
+- amount matches;
+- recipient matches.
+
+If verification fails, processing stops with:
+
+`Stop: transaction cannot be verified`
+
+No preservation path continues after transaction verification failure.
+
+### Timeliness
+
+The prototype preservation eligibility window is locked at:
+
+`30 minutes`
+
+Rules:
+
+- transfer age <= 30 minutes → timely
+- transfer age > 30 minutes → not timely
+
+This is a prototype rule and is not represented as a real SPEI or bank rule.
+
+### Locked demo behavior
+
+The current deterministic results are:
+
+- ANA_CASE_1 → transaction verified + timely
+- ANA_CASE_2 → transaction verified + timely
+- ANA_CASE_3 → transaction verified + too late
+
+For ANA_CASE_3, the preservation path stops at the timeliness stage with:
+
+`Preservation unavailable · restitution review continues`
+
+### Tests
+
+Created:
+
+`tests/test_verification.py`
+
+The Phase 3 test suite validates:
+
+- Case 1 verification;
+- Case 2 verification;
+- Case 3 verification;
+- transaction mismatch blocking;
+- unknown reference blocking;
+- exactly 30 minutes remaining timely;
+- more than 30 minutes becoming untimely;
+- Case 1 verified + timely;
+- Case 2 verified + timely;
+- Case 3 verified + too late;
+- failed verification stopping before timeliness.
+
+Test result:
+
+`11 passed`
+
+### Scope boundary
+
+Phase 3 does not include:
+
+- Gemini integration;
+- AI evidence structuring;
+- receiving-side signal lookup logic;
+- deterministic preservation authorization;
+- simulated hold state;
+- countdown;
+- expiry;
+- escalation.
+
