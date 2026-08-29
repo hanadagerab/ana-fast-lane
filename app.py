@@ -24,21 +24,18 @@ DEMO_CASES = {
         "amount": 18500,
         "recipient": "Cuenta terminada en 2714",
         "transfer_age_minutes": 12,
-        "evidence_consistent": True,
     },
     "Case 2 — Fast + uncorroborated": {
         "reference": "SPEI-58417",
         "amount": 12400,
         "recipient": "Cuenta terminada en 6408",
         "transfer_age_minutes": 8,
-        "evidence_consistent": True,
     },
     "Case 3 — Too late": {
         "reference": "SPEI-73105",
         "amount": 22600,
         "recipient": "Cuenta terminada en 9032",
         "transfer_age_minutes": 47,
-        "evidence_consistent": True,
     },
 }
 
@@ -49,6 +46,7 @@ def initialize_session_state():
         "hold_started_at": None,
         "stronger_evidence": False,
         "demo_elapsed_seconds": 0,
+        "evidence_result": None,
     }
 
     for key, value in defaults.items():
@@ -61,24 +59,27 @@ def reset_hold_state():
     st.session_state.hold_started_at = None
     st.session_state.stronger_evidence = False
     st.session_state.demo_elapsed_seconds = 0
+    st.session_state.evidence_result = None
 
 
 def render_hold_outcome(result):
     st.success("TEMPORARY HOLD ACTIVE — SIMULATED")
 
     st.metric(
-        "Reported transaction amount",
+        "Amount temporarily preserved",
         f"MX${result['hold_scope']['amount']:,.0f}",
     )
 
-    st.write(f"**Reference:** {result['hold_scope']['reference']}")
+    st.write(f"**Transaction reference:** {result['hold_scope']['reference']}")
 
     st.markdown(
         """
-        ✓ Transaction verified  
-        ✓ Evidence structured by AI  
-        ✓ Independent receiving-side signal found  
-        ✓ Simulated receiving-side signal
+        Your reported transaction was verified and an independent simulated
+        receiving-side signal was found.
+
+        **This does not mean you have recovered your money.**
+        The immediate goal is to keep the reported funds from moving while
+        the case is reviewed.
         """
     )
 
@@ -102,81 +103,139 @@ def render_hold_outcome(result):
         )
 
         st.metric(
-            "Temporary simulated hold remaining",
+            "Temporary hold time remaining",
             countdown,
         )
 
         st.caption(
-            "Temporary · Reversible · Auto-expiring"
+            "This temporary hold will expire automatically unless the case "
+            "is escalated during review."
         )
 
-        st.warning("Preservation ≠ restitution")
+        st.markdown("### What happens now?")
 
-        st.markdown("### Demo controls")
+        st.markdown(
+            """
+            - Your report remains active.
+            - The reported transaction is temporarily preserved in this simulation.
+            - The case can be escalated for human review if stronger evidence appears.
+            - If the hold expires without escalation, the simulated funds are released.
+            """
+        )
 
-        if st.button(
-            "Simulate time near expiry",
-            use_container_width=True,
-        ):
-            st.session_state.demo_elapsed_seconds = 14 * 60 + 50
-            st.rerun()
+        with st.expander("Demo controls"):
+            st.caption(
+                "These controls exist only to demonstrate prototype states."
+            )
 
-        if st.button(
-            "Simulate stronger evidence",
-            use_container_width=True,
-        ):
-            st.session_state.stronger_evidence = True
-            st.rerun()
+            if st.button(
+                "Simulate time near expiry",
+                use_container_width=True,
+            ):
+                st.session_state.demo_elapsed_seconds = 14 * 60 + 50
+                st.rerun()
 
-        if st.button(
-            "Simulate hold expiry",
-            use_container_width=True,
-        ):
-            st.session_state.demo_elapsed_seconds = 15 * 60
-            st.rerun()
+            if st.button(
+                "Simulate stronger evidence",
+                use_container_width=True,
+            ):
+                st.session_state.stronger_evidence = True
+                st.rerun()
+
+            if st.button(
+                "Simulate hold expiry",
+                use_container_width=True,
+            ):
+                st.session_state.demo_elapsed_seconds = 15 * 60
+                st.rerun()
 
     elif hold_state["hold_state"] == "EXPIRED":
         st.warning(
-            "Hold expired · simulated funds released"
+            "The temporary simulated hold has expired."
         )
-        st.caption(
-            "No final restitution decision has been made."
+
+        st.markdown(
+            """
+            **What happens now?**
+
+            The simulated funds were released because the temporary hold ended.
+            Your report can still continue through institutional review.
+
+            **This does not mean your case is closed or that the funds have been recovered.**
+            """
         )
 
     elif hold_state["hold_state"] == "ESCALATED":
         st.info(
-            "Escalated to Human Reviewer — simulated"
+            "Your case was escalated to a Human Reviewer — simulated"
         )
-        st.caption(
-            "Human review does not imply guilt or final restitution."
+
+        st.markdown(
+            """
+            **What happens now?**
+
+            A human reviewer would examine the stronger evidence and decide
+            whether further action is justified.
+
+            Human review does not mean that fraud has been proven or that
+            the money will automatically be returned.
+            """
         )
 
 
 def render_no_hold_review():
     st.warning(
-        "Report verified · temporary preservation not authorized"
-    )
-    st.info("Institutional review requested")
-
-    st.caption(
-        "No simulated hold was created because independent "
-        "receiving-side evidence was not available."
+        "We could not authorize a temporary hold automatically."
     )
 
-    st.warning("Preservation ≠ restitution")
+    st.markdown(
+        """
+        We did not find the additional independent signal required for
+        automatic preservation.
+
+        **This does not mean your report is false.**
+
+        Your report has been sent for institutional review.
+        """
+    )
+
+    st.markdown("### What happens now?")
+
+    st.markdown(
+        """
+        - No temporary hold is active.
+        - Your report remains under review.
+        - Keep your transaction reference and evidence available.
+        - In a real case, you should also contact your financial institution immediately.
+        - A temporary hold and getting your money back are not the same thing.
+        """
+    )
 
 
 def render_too_late():
     st.warning(
-        "Preservation unavailable · restitution review continues"
+        "The fast temporary-preservation window has passed."
     )
 
-    st.caption(
-        "The report falls outside the prototype 30-minute "
-        "preservation eligibility window."
+    st.markdown(
+        """
+        This report falls outside the prototype 30-minute eligibility window
+        for temporary preservation.
+
+        **The review to try to recover the money can still continue.**
+        """
     )
 
-    st.warning("Preservation ≠ restitution")
+    st.markdown("### What happens now?")
+
+    st.markdown(
+        """
+        - No temporary hold is active through this fast path.
+        - Your report remains active for further review.
+        - In a real case, contact your financial institution immediately.
+        - Temporary preservation is different from recovering the money.
+        """
+    )
 
 
 def main():
@@ -185,7 +244,7 @@ def main():
     gemini_api_key = st.secrets.get("GEMINI_API_KEY", "")
 
     st.title("Ana Fast-Lane")
-    st.subheader("From Report to Temporary Preservation")
+    st.subheader("Report a fraudulent transfer quickly")
 
     st.warning(
         "SIMULATED PROTOTYPE — Synthetic data only. "
@@ -195,26 +254,33 @@ def main():
 
     st.markdown(
         """
-        **Core question:**  
-        How fast can a verified fraud report become operational action?
+        **What this prototype does**
+
+        It checks whether one reported transfer can qualify for a temporary
+        simulated preservation action.
+
+        **First, we try to keep the money from moving. This does NOT mean
+        you have already recovered your money.**
         """
     )
 
     st.divider()
 
-    selected_case = st.selectbox(
-        "Demo case",
-        options=list(DEMO_CASES.keys()),
-        on_change=reset_hold_state,
-    )
+    with st.expander("Prototype demo case selector"):
+        selected_case = st.selectbox(
+            "Choose a synthetic demo case",
+            options=list(DEMO_CASES.keys()),
+            on_change=reset_hold_state,
+        )
 
     case = DEMO_CASES[selected_case]
 
-    st.markdown("### Ana's reported transaction")
+    st.markdown("### Your reported transfer")
 
     reference = st.text_input(
-        "Transaction / reference ID",
+        "Transaction reference",
         value=case["reference"],
+        help="In a real case, this would come from your transfer confirmation.",
     )
 
     amount = st.number_input(
@@ -231,29 +297,28 @@ def main():
 
     transfer_age_minutes = st.number_input(
         "Minutes since transfer",
-        min_value=0.0,
-        value=float(case["transfer_age_minutes"]),
-        step=1.0,
+        min_value=0,
+        value=int(case["transfer_age_minutes"]),
+        step=1,
     )
 
     narrative = st.text_area(
-        "Short narrative",
-        value=(
-            "Ana says she was deceived into making this "
-            "specific transfer."
-        ),
+        "Tell us what happened",
+        value="Me engañaron para hacer esta transferencia.",
+        help="A short explanation is enough for this prototype.",
     )
 
     screenshot = st.file_uploader(
-        "Upload screenshot evidence",
+        "Upload evidence",
         type=["png", "jpg", "jpeg"],
+        help=(
+            "Upload a screenshot of the transfer confirmation, conversation, "
+            "or other evidence related to this specific transfer."
+        ),
     )
 
-    st.caption(
-        "For this Phase 6 demo, the selected case uses locked "
-        "synthetic AI evidence consistency. Real Gemini upload "
-        "processing will be connected in the next UI step."
-    )
+    if screenshot is not None:
+        st.success("Evidence received.")
 
     if st.button(
         "Report fraud & check preservation",
@@ -261,7 +326,7 @@ def main():
         use_container_width=True,
     ):
         if not reference.strip():
-            st.error("Transaction/reference ID is required.")
+            st.error("Transaction reference is required.")
             return
 
         if amount <= 0:
@@ -273,11 +338,11 @@ def main():
             return
 
         if not narrative.strip():
-            st.error("Narrative is required.")
+            st.error("Please briefly explain what happened.")
             return
 
         if screenshot is None:
-            st.error("Screenshot evidence is required.")
+            st.error("Please upload evidence before continuing.")
             return
 
         verification = verify_and_check_timeliness(
@@ -305,8 +370,8 @@ def main():
         else:
             if not gemini_api_key:
                 st.error(
-                    "Gemini API key is unavailable. "
-                    "Evidence cannot be structured safely."
+                    "The evidence service is temporarily unavailable. "
+                    "No automatic hold was authorized."
                 )
                 return
 
@@ -320,44 +385,13 @@ def main():
                 reported_recipient=recipient,
             )
 
-            st.markdown("### AI evidence structuring")
+            st.session_state.evidence_result = evidence_result
 
-            if evidence_result["ai_status"] == "structured":
-                st.success("Evidence structured by AI")
-            else:
+            if evidence_result["ai_status"] != "structured":
                 st.warning(
-                    "Evidence structuring failed safely. "
-                    "No automatic hold can be authorized."
+                    "The evidence service is temporarily unavailable. "
+                    "No automatic hold was authorized."
                 )
-
-            st.json(
-                {
-                    "payment_amount_mentioned": evidence_result[
-                        "payment_amount_mentioned"
-                    ],
-                    "payment_context": evidence_result[
-                        "payment_context"
-                    ],
-                    "claimed_identity_or_purpose": evidence_result[
-                        "claimed_identity_or_purpose"
-                    ],
-                    "relevant_evidence_facts": evidence_result[
-                        "relevant_evidence_facts"
-                    ],
-                    "matches_reported_amount": evidence_result[
-                        "matches_reported_amount"
-                    ],
-                    "matches_reported_context": evidence_result[
-                        "matches_reported_context"
-                    ],
-                    "evidence_consistent": evidence_result[
-                        "evidence_consistent"
-                    ],
-                    "limitations": evidence_result[
-                        "limitations"
-                    ],
-                }
-            )
 
             st.session_state.decision_result = (
                 run_preservation_decision(
@@ -397,18 +431,35 @@ def main():
             render_too_late()
 
         elif decision == "STOP":
-            st.error("Stop: transaction cannot be verified")
+            st.error(
+                "We could not verify this transaction. "
+                "Please review the transaction details and try again."
+            )
 
         elif decision == "NO_AUTOMATIC_HOLD":
-            st.warning("No automatic hold")
-            st.info("Institutional review requested")
+            st.warning(
+                "We could not authorize a temporary hold automatically."
+            )
+
+            st.markdown(
+                """
+                Your report has been sent for institutional review.
+
+                **This does not mean your report is false.**
+
+                In a real case, you should also contact your financial
+                institution immediately.
+                """
+            )
 
     st.divider()
 
-    st.caption(
-        "Prototype rules: 30-minute eligibility window · "
-        "15-minute simulated hold · reported transaction only"
-    )
+    with st.expander("Prototype rules"):
+        st.caption(
+            "30-minute eligibility window · "
+            "15-minute simulated hold · "
+            "reported transaction only"
+        )
 
 
 if __name__ == "__main__":
