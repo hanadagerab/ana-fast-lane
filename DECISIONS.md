@@ -325,3 +325,153 @@ Phase 3 does not include:
 - expiry;
 - escalation.
 
+
+### Implementation compromise — Gemini model availability
+
+The locked implementation target was Gemini 2.5 Flash.
+
+During implementation, Google returned a 404 stating that Gemini 2.5 Flash is no longer available to new users.
+
+The MVP therefore uses:
+
+`gemini-3.6-flash`
+
+This change affects only model availability.
+
+It does not change:
+
+- the product scope;
+- the evidence-structuring function;
+- the authority boundary;
+- the deterministic preservation logic;
+- the rule that AI cannot authorize a hold;
+- the requirement for independent receiving-side evidence.
+
+---
+
+## Phase 4 — AI Evidence Structuring
+
+Status: Completed
+
+### Evidence structuring module
+
+Created:
+
+`evidence.py`
+
+The AI component is limited to:
+
+- extracting information from the uploaded screenshot;
+- summarizing Ana's narrative;
+- identifying relevant evidence facts;
+- comparing evidence with the reported amount and context;
+- assessing internal consistency;
+- stating limitations.
+
+The AI cannot:
+
+- authorize preservation;
+- recommend a hold;
+- determine recipient guilt;
+- determine that fraud legally occurred;
+- freeze an account;
+- reimburse Ana;
+- override deterministic application rules.
+
+The authority principle remains:
+
+**AI interprets → independent data corroborates → deterministic rules authorize**
+
+### Prompt injection protection
+
+Text inside screenshots is treated as untrusted evidence content.
+
+Instructions embedded inside an uploaded image cannot change application rules or authorize preservation.
+
+### Safe failure
+
+If AI output is unavailable, malformed, invalid, or fails local validation, the system returns:
+
+`ai_status = safe_failure`
+
+and:
+
+`evidence_consistent = false`
+
+This means AI failure cannot support automatic preservation.
+
+### Local validation
+
+Provider-side structured schema enforcement was removed after implementation testing showed instability with image input.
+
+The application instead:
+
+1. requests JSON output from Gemini;
+2. parses the returned JSON locally;
+3. validates the expected evidence fields;
+4. rejects forbidden authorization or guilt fields;
+5. fails safely if validation fails.
+
+This preserves the authority boundary while avoiding provider-side schema instability.
+
+### Gemini model implementation compromise
+
+The locked implementation target was:
+
+`gemini-2.5-flash`
+
+During implementation, the Gemini API returned a 404 indicating that Gemini 2.5 Flash was not available to this new API user.
+
+The MVP therefore uses:
+
+`gemini-3.6-flash`
+
+This change is limited to model availability.
+
+It does not change:
+
+- product scope;
+- evidence-structuring responsibilities;
+- authority boundaries;
+- deterministic preservation logic;
+- the requirement for independent receiving-side evidence;
+- the rule that AI cannot authorize a hold.
+
+### Secrets
+
+The Gemini API key is stored locally in:
+
+`.streamlit/secrets.toml`
+
+This file is excluded from Git through `.gitignore`.
+
+The API key is not stored in source code or committed to the repository.
+
+### Timeout
+
+Gemini requests use a 30-second timeout.
+
+If the request does not complete successfully, the evidence layer fails safely.
+
+### Phase 4 integration result
+
+Verified:
+
+- Gemini API connection works;
+- image input works;
+- JSON output works;
+- evidence output passes local validation;
+- invalid or unavailable evidence fails safely;
+- AI cannot authorize preservation.
+
+### Scope boundary
+
+Phase 4 does not include:
+
+- independent receiving-side signal lookup logic;
+- deterministic preservation authorization;
+- simulated hold state;
+- countdown;
+- expiry;
+- escalation.
+
