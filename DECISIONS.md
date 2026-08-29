@@ -970,3 +970,116 @@ External Gemini cloud quota: Documented constraint
 
 Session: Closed
 
+
+---
+
+## Persona Test — Ana
+
+Status: Completed
+
+### Persona tested
+
+Ana was tested as the target user for the Week 3 Restitution MVP.
+
+The persona was instructed to react only as a stressed Mexican SPEI user who had just realized she was deceived into making a fraudulent transfer.
+
+The test focused on whether Ana could understand:
+
+- what the product was asking her to do;
+- whether any action had already happened;
+- what a temporary hold meant;
+- whether preservation meant recovery;
+- what happened when preservation was unavailable;
+- what she should do next.
+
+### Main findings
+
+The core operational logic was understandable once the outcome was shown.
+
+Ana correctly understood that:
+
+- temporary preservation is different from recovering the money;
+- a successful hold means the money is temporarily prevented from moving;
+- a failed automatic hold does not necessarily mean the report is false;
+- missing the fast preservation window does not mean the broader review is over.
+
+The largest usability gap was language and next-step clarity rather than decision logic.
+
+### Main confusion points
+
+Ana found the following language too technical or inappropriate for a victim-facing interface:
+
+- Fast-Lane
+- corroborated / uncorroborated
+- temporary preservation
+- restitution
+- operational action
+- Evidence structured by AI
+- independent receiving-side signal
+- simulated receiving-side signal
+- demo-case terminology
+- technical prototype rules
+- AI JSON output
+
+Ana also repeatedly asked:
+
+- Has my report already been submitted?
+- Is anything happening to my money yet?
+- What do I do now?
+- Who is reviewing the case?
+- What happens when the countdown reaches zero?
+- Does a hold mean I already recovered the money?
+
+### Successful hold finding
+
+On the temporary hold screen, Ana understood that the funds were temporarily preserved and that this did not mean the money had already returned to her account.
+
+The countdown communicated urgency, but required an explanation of what happens at expiry.
+
+### No-hold finding
+
+When no automatic hold was available, Ana understood that the funds were not currently protected.
+
+However, she needed explicit reassurance that:
+
+`This does not mean your report is false.`
+
+She also needed a clear next step rather than an abstract institutional-review state.
+
+### Too-late finding
+
+Ana understood that the fast preservation path was no longer available after the prototype eligibility window.
+
+Importantly, she also understood that the broader effort to recover the money could continue.
+
+This outcome communicated the preservation / recovery distinction more clearly than the original technical wording.
+
+### UI changes implemented after persona testing
+
+Updated `app.py` to:
+
+- reduce technical language in Ana's primary flow;
+- hide the demo-case selector inside an expander;
+- hide demo lifecycle controls inside an expander;
+- remove visible AI JSON from the victim-facing result flow;
+- change the narrative to first-person language;
+- confirm when evidence has been received;
+- explain what screenshot evidence can be uploaded;
+- replace technical preservation/restitution wording with plain-language explanations;
+- explicitly state that temporary preservation does not mean the money has been recovered;
+- add `What happens now?` guidance to outcome screens;
+- explain countdown expiry;
+- clarify that missing independent evidence does not mean the report is false;
+- explain that a late report can still continue through broader review;
+- simplify minutes from decimal values to whole minutes.
+
+### Persona-test conclusion
+
+The test did not identify a need to change the locked deterministic decision logic.
+
+The main improvement opportunity was translating internal system states into immediate, human next steps.
+
+Final usability conclusion:
+
+`Ana understands the operational logic once the outcome is shown, but the interface must translate system states into plain-language next steps for a person in crisis.`
+
