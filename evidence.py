@@ -289,6 +289,6 @@ Rules:
             flush=True,
         )
         return safe_failure(
-            f"Evidence structuring failed safely: "
-            f"{type(exc).__name__}: {exc}"
+            "AI service temporarily unavailable. "
+            "No automatic hold was authorized."
         )
