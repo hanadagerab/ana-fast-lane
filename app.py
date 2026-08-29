@@ -2,6 +2,7 @@ import time
 
 import streamlit as st
 
+from evidence import structure_evidence
 from preservation import (
     format_countdown,
     get_hold_state,
@@ -181,6 +182,8 @@ def render_too_late():
 def main():
     initialize_session_state()
 
+    gemini_api_key = st.secrets.get("GEMINI_API_KEY", "")
+
     st.title("Ana Fast-Lane")
     st.subheader("From Report to Temporary Preservation")
 
@@ -300,13 +303,69 @@ def main():
             }
 
         else:
+            if not gemini_api_key:
+                st.error(
+                    "Gemini API key is unavailable. "
+                    "Evidence cannot be structured safely."
+                )
+                return
+
+            evidence_result = structure_evidence(
+                api_key=gemini_api_key,
+                image_bytes=screenshot.getvalue(),
+                image_mime_type=screenshot.type,
+                narrative=narrative,
+                reported_amount=amount,
+                reported_reference=reference,
+                reported_recipient=recipient,
+            )
+
+            st.markdown("### AI evidence structuring")
+
+            if evidence_result["ai_status"] == "structured":
+                st.success("Evidence structured by AI")
+            else:
+                st.warning(
+                    "Evidence structuring failed safely. "
+                    "No automatic hold can be authorized."
+                )
+
+            st.json(
+                {
+                    "payment_amount_mentioned": evidence_result[
+                        "payment_amount_mentioned"
+                    ],
+                    "payment_context": evidence_result[
+                        "payment_context"
+                    ],
+                    "claimed_identity_or_purpose": evidence_result[
+                        "claimed_identity_or_purpose"
+                    ],
+                    "relevant_evidence_facts": evidence_result[
+                        "relevant_evidence_facts"
+                    ],
+                    "matches_reported_amount": evidence_result[
+                        "matches_reported_amount"
+                    ],
+                    "matches_reported_context": evidence_result[
+                        "matches_reported_context"
+                    ],
+                    "evidence_consistent": evidence_result[
+                        "evidence_consistent"
+                    ],
+                    "limitations": evidence_result[
+                        "limitations"
+                    ],
+                }
+            )
+
             st.session_state.decision_result = (
                 run_preservation_decision(
                     reference=reference,
                     reported_amount=amount,
                     transaction_verified=True,
                     timely=True,
-                    evidence_consistent=case[
+                    evidence_consistent=evidence_result[
                         "evidence_consistent"
                     ],
                 )

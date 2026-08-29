@@ -708,3 +708,90 @@ Phase 6 still does not include:
 - Deploy 1 / Deploy 2 completion;
 - final Session Close.
 
+
+---
+
+## Phase 7 — Real Screenshot-to-Gemini UI Integration
+
+Status: Completed
+
+### Real UI evidence flow
+
+The Streamlit UI now sends the uploaded screenshot and Ana's narrative to the AI evidence layer.
+
+The live flow is:
+
+`Ana screenshot + narrative → Gemini evidence structuring → local validation → deterministic preservation rule`
+
+The AI output does not directly authorize preservation.
+
+### Locked authority boundary
+
+The implementation preserves:
+
+**AI interprets → independent data corroborates → deterministic rules authorize**
+
+AI can only produce structured evidence fields.
+
+The final preservation decision remains in deterministic Python logic.
+
+### Case 1 live verification
+
+Manually verified in the Streamlit UI using synthetic Case 1 evidence:
+
+- reported amount matched;
+- reported context matched;
+- `evidence_consistent = true`;
+- independent receiving-side signal was present;
+- deterministic rule produced:
+
+`TEMPORARY HOLD ACTIVE — SIMULATED`
+
+### Safe failure behavior
+
+During integration testing, temporary API failures including:
+
+- `ServerError`
+- `ReadTimeout`
+- `ClientError`
+
+were observed.
+
+The evidence layer continued to fail safely with:
+
+`evidence_consistent = false`
+
+and did not authorize automatic preservation.
+
+### Resilience adjustments
+
+The Gemini evidence layer now includes:
+
+- 60-second request timeout;
+- one retry for transient `ServerError`;
+- one retry for transient `ReadTimeout`;
+- local JSON validation;
+- forbidden authorization-field rejection;
+- safe failure when validation or API processing fails.
+
+### AI limitations
+
+Gemini may identify evidence consistency and extract transaction details, but it does not:
+
+- establish deceptive intent;
+- validate screenshot authenticity independently;
+- determine recipient guilt;
+- prove the full fraud case;
+- authorize preservation.
+
+### Scope status
+
+The core MVP product flow is now implemented locally.
+
+Remaining work:
+
+- Streamlit Community Cloud deployment;
+- deployment secrets configuration;
+- final mechanical test pass;
+- final Session Close in `DECISIONS.md`.
+

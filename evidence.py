@@ -199,7 +199,7 @@ def structure_evidence(
 
     client = genai.Client(
         api_key=api_key,
-        http_options=types.HttpOptions(timeout=30000),
+        http_options=types.HttpOptions(timeout=60000),
     )
 
     user_prompt = f"""
@@ -242,23 +242,32 @@ Rules:
 """
 
     try:
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=[
-                types.Part.from_bytes(
-                    data=image_bytes,
-                    mime_type=image_mime_type,
-                ),
-                user_prompt,
-            ],
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_INSTRUCTION,
-                response_mime_type="application/json",
-                temperature=0,
-            ),
-        )
+        response = None
 
-        if not response.text:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=MODEL_NAME,
+                    contents=[
+                        types.Part.from_bytes(
+                            data=image_bytes,
+                            mime_type=image_mime_type,
+                        ),
+                        user_prompt,
+                    ],
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_INSTRUCTION,
+                        response_mime_type="application/json",
+                        temperature=0,
+                    ),
+                )
+                break
+            except Exception as exc:
+                if type(exc).__name__ in {"ServerError", "ReadTimeout"} and attempt == 0:
+                    continue
+                raise
+
+        if response is None or not response.text:
             return safe_failure("Gemini returned an empty response.")
 
         parsed = json.loads(response.text)
