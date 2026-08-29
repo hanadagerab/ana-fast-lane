@@ -862,3 +862,111 @@ This does not change the MVP's:
 - synthetic-data scope;
 - preservation/restitution separation.
 
+
+---
+
+## Session Close
+
+Status: Completed
+
+### Final implementation status
+
+The Ana Fast-Lane MVP is implemented.
+
+The completed flow is:
+
+`Ana report → transaction verification → timeliness → Gemini evidence structuring → independent receiving-side signal → deterministic preservation rule → simulated outcome`
+
+### Locked demo outcomes
+
+The implemented product supports the three locked demo cases:
+
+- ANA_CASE_1 → `TEMPORARY HOLD ACTIVE — SIMULATED`
+- ANA_CASE_2 → `Report verified · temporary preservation not authorized` + institutional review
+- ANA_CASE_3 → `Preservation unavailable · restitution review continues`
+
+### Hold lifecycle
+
+For eligible simulated holds, the product supports:
+
+- `ACTIVE`
+- `EXPIRED`
+- `ESCALATED`
+
+The simulated hold:
+
+- lasts 15 minutes;
+- applies only to the reported transaction;
+- is reversible;
+- auto-expires;
+- remains separate from restitution.
+
+### Authority boundary
+
+The final implementation preserves:
+
+**AI interprets → independent data corroborates → deterministic rules authorize**
+
+AI never directly authorizes preservation.
+
+### Security floor
+
+Final security constraints:
+
+- synthetic data only;
+- no database;
+- no Supabase;
+- no authentication;
+- no real banking integration;
+- no real SPEI integration;
+- no persistent personal-data storage;
+- no secrets in source code;
+- Gemini secret stored outside the repository;
+- AI/API failure produces safe failure;
+- no account-wide freeze;
+- no guilt determination;
+- preservation ≠ restitution.
+
+### Testing
+
+Final automated test suite:
+
+`31 passed`
+
+Manual local verification completed for:
+
+- Case 1;
+- Case 2;
+- Case 3;
+- countdown;
+- expiry;
+- escalation;
+- real screenshot-to-Gemini processing;
+- deterministic preservation authorization.
+
+### Deployment
+
+Streamlit Community Cloud deployment completed.
+
+The deployed application successfully loads and runs from GitHub.
+
+During cloud Gemini testing, the Gemini API returned:
+
+`429 RESOURCE_EXHAUSTED`
+
+This is documented as an external API quota constraint.
+
+The application handled the condition safely and did not authorize preservation.
+
+### Final status
+
+Core MVP: Completed
+
+Local end-to-end flow: Verified
+
+Streamlit deployment: Completed
+
+External Gemini cloud quota: Documented constraint
+
+Session: Closed
+
