@@ -593,3 +593,118 @@ Phase 5 does not include:
 - simulated escalation;
 - final deployed UI.
 
+
+---
+
+## Phase 6 — Hold Lifecycle + Streamlit Outcome UI
+
+Status: Completed
+
+### Streamlit outcome UI
+
+Updated:
+
+`app.py`
+
+The prototype flow now supports the three locked demo outcomes:
+
+- ANA_CASE_1 → `TEMPORARY HOLD ACTIVE — SIMULATED`
+- ANA_CASE_2 → `Report verified · temporary preservation not authorized`
+- ANA_CASE_3 → `Preservation unavailable · restitution review continues`
+
+Ana's transaction fields remain visible after demo-case prefilling.
+
+The UI includes:
+
+- transaction/reference ID;
+- amount;
+- recipient;
+- transfer age;
+- narrative;
+- screenshot upload;
+- simulated prototype labeling;
+- preservation/restitution separation.
+
+### Temporary simulated hold lifecycle
+
+Added hold lifecycle logic to:
+
+`preservation.py`
+
+States:
+
+- `ACTIVE`
+- `EXPIRED`
+- `ESCALATED`
+
+The locked hold duration remains:
+
+`15 minutes`
+
+### Countdown
+
+Eligible cases display a countdown in `MM:SS` format.
+
+The countdown appears only when the deterministic decision produces an eligible simulated hold.
+
+### Expiry
+
+If the simulated hold reaches the 15-minute limit:
+
+`Hold expired · simulated funds released`
+
+Expiry is explicitly labeled as simulated.
+
+### Escalation
+
+If stronger synthetic evidence appears before expiry:
+
+`Escalated to Human Reviewer — simulated`
+
+Human review does not imply:
+
+- guilt;
+- final fraud determination;
+- final restitution.
+
+### Mutual exclusivity
+
+Expiry and escalation are mutually exclusive.
+
+### Demo controls
+
+The UI includes simulation controls so lifecycle behavior can be demonstrated without waiting 15 real minutes.
+
+These controls support:
+
+- simulated time near expiry;
+- simulated stronger evidence;
+- simulated hold expiry.
+
+### Visual verification
+
+Manually verified in the local Streamlit UI:
+
+- Case 1 reaches temporary simulated hold;
+- countdown appears;
+- stronger evidence produces simulated escalation;
+- expiry produces simulated funds release;
+- Case 2 reaches no hold + institutional review;
+- Case 3 reaches preservation unavailable;
+- Case 2 and Case 3 show no countdown.
+
+### Tests
+
+Full test suite result:
+
+`31 passed`
+
+### Scope boundary
+
+Phase 6 still does not include:
+
+- final real screenshot-to-Gemini UI connection;
+- final deployed Streamlit version;
+- Deploy 1 / Deploy 2 completion;
+- final Session Close.
+

@@ -174,3 +174,59 @@ def run_preservation_decision(
         **signal_result,
         **decision,
     }
+
+
+HOLD_DURATION_SECONDS = 15 * 60
+
+
+def get_hold_state(
+    *,
+    started_at_epoch: float,
+    current_epoch: float,
+    stronger_evidence: bool = False,
+) -> Dict[str, Any]:
+    """
+    Determine the simulated hold lifecycle state.
+
+    States:
+    - ACTIVE
+    - EXPIRED
+    - ESCALATED
+
+    Escalation takes priority only while the hold is still active.
+    Expiry and escalation are mutually exclusive.
+    """
+    elapsed_seconds = max(0, current_epoch - started_at_epoch)
+    remaining_seconds = max(0, HOLD_DURATION_SECONDS - elapsed_seconds)
+
+    if elapsed_seconds >= HOLD_DURATION_SECONDS:
+        return {
+            "hold_state": "EXPIRED",
+            "remaining_seconds": 0,
+            "message": "Hold expired · simulated funds released",
+            "simulated": True,
+        }
+
+    if stronger_evidence:
+        return {
+            "hold_state": "ESCALATED",
+            "remaining_seconds": int(remaining_seconds),
+            "message": "Escalated to Human Reviewer — simulated",
+            "simulated": True,
+        }
+
+    return {
+        "hold_state": "ACTIVE",
+        "remaining_seconds": int(remaining_seconds),
+        "message": "TEMPORARY HOLD ACTIVE — SIMULATED",
+        "simulated": True,
+    }
+
+
+def format_countdown(remaining_seconds: int) -> str:
+    """
+    Format remaining hold time as MM:SS.
+    """
+    remaining_seconds = max(0, int(remaining_seconds))
+    minutes, seconds = divmod(remaining_seconds, 60)
+    return f"{minutes:02d}:{seconds:02d}"

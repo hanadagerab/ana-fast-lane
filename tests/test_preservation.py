@@ -182,3 +182,79 @@ def test_hold_requires_all_four_conditions():
     )
 
     assert result["hold_eligible"] is True
+
+
+from preservation import (
+    HOLD_DURATION_SECONDS,
+    format_countdown,
+    get_hold_state,
+)
+
+
+def test_hold_is_active_before_expiry():
+    result = get_hold_state(
+        started_at_epoch=1000,
+        current_epoch=1100,
+        stronger_evidence=False,
+    )
+
+    assert result["hold_state"] == "ACTIVE"
+    assert result["remaining_seconds"] == 800
+    assert result["message"] == "TEMPORARY HOLD ACTIVE — SIMULATED"
+
+
+def test_hold_expires_after_15_minutes():
+    result = get_hold_state(
+        started_at_epoch=1000,
+        current_epoch=1000 + HOLD_DURATION_SECONDS,
+        stronger_evidence=False,
+    )
+
+    assert result["hold_state"] == "EXPIRED"
+    assert result["remaining_seconds"] == 0
+    assert result["message"] == "Hold expired · simulated funds released"
+
+
+def test_hold_escalates_before_expiry():
+    result = get_hold_state(
+        started_at_epoch=1000,
+        current_epoch=1100,
+        stronger_evidence=True,
+    )
+
+    assert result["hold_state"] == "ESCALATED"
+    assert result["message"] == "Escalated to Human Reviewer — simulated"
+
+
+def test_expiry_wins_after_hold_duration():
+    result = get_hold_state(
+        started_at_epoch=1000,
+        current_epoch=1000 + HOLD_DURATION_SECONDS,
+        stronger_evidence=True,
+    )
+
+    assert result["hold_state"] == "EXPIRED"
+
+
+def test_expiry_and_escalation_are_mutually_exclusive():
+    expired = get_hold_state(
+        started_at_epoch=1000,
+        current_epoch=2000,
+        stronger_evidence=True,
+    )
+
+    escalated = get_hold_state(
+        started_at_epoch=1000,
+        current_epoch=1100,
+        stronger_evidence=True,
+    )
+
+    assert expired["hold_state"] == "EXPIRED"
+    assert escalated["hold_state"] == "ESCALATED"
+    assert expired["hold_state"] != escalated["hold_state"]
+
+
+def test_countdown_formats_minutes_and_seconds():
+    assert format_countdown(872) == "14:32"
+    assert format_countdown(60) == "01:00"
+    assert format_countdown(0) == "00:00"
