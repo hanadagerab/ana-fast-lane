@@ -795,3 +795,70 @@ Remaining work:
 - final mechanical test pass;
 - final Session Close in `DECISIONS.md`.
 
+
+---
+
+## Deployment Constraint — Gemini API Quota
+
+During Streamlit Community Cloud deployment testing, the deployed app returned:
+
+`429 RESOURCE_EXHAUSTED`
+
+from the Gemini API.
+
+This indicates an external API quota / rate-limit constraint.
+
+The deployed application itself successfully:
+
+- loaded from GitHub;
+- started in Streamlit Community Cloud;
+- loaded the configured Gemini secret;
+- submitted the Gemini API request;
+- handled the API failure safely.
+
+The failure occurred after the request reached Gemini.
+
+### Safety behavior
+
+When Gemini returned the quota error, the evidence layer produced:
+
+`ai_status = safe_failure`
+
+and:
+
+`evidence_consistent = false`
+
+The deterministic preservation engine therefore did not authorize an automatic hold.
+
+This confirms that an external AI availability or quota failure cannot bypass the product's authority boundary.
+
+### Local end-to-end verification
+
+Before deployment, the full live flow was successfully verified locally using synthetic Case 1 evidence:
+
+`Screenshot + narrative → Gemini → structured evidence → local validation → independent receiving-side signal → deterministic preservation rule`
+
+The verified Case 1 output included:
+
+- `matches_reported_amount = true`;
+- `matches_reported_context = true`;
+- `evidence_consistent = true`;
+- independent receiving-side signal present;
+- `TEMPORARY HOLD ACTIVE — SIMULATED`.
+
+### Deployment status
+
+Streamlit Community Cloud deployment: Completed
+
+Core app deployment: Working
+
+Gemini live processing in cloud: Temporarily constrained by external API quota
+
+This does not change the MVP's:
+
+- product logic;
+- deterministic authorization rule;
+- security boundary;
+- synthetic-data scope;
+- preservation/restitution separation.
+
