@@ -475,3 +475,121 @@ Phase 4 does not include:
 - expiry;
 - escalation.
 
+
+---
+
+## Phase 5 — Independent Receiving-Side Signal + Deterministic Preservation Rule
+
+Status: Completed
+
+### Independent receiving-side signal lookup
+
+Created receiving-side lookup logic in:
+
+`preservation.py`
+
+Receiving-side signals are loaded from:
+
+`data/receiving_signals.json`
+
+This dataset remains separate from Ana's report and from transaction verification data.
+
+The lookup supports the locked signal types:
+
+- `pre_existing_internal_risk_flag`
+- `recent_independent_fraud_report`
+- `unusual_incoming_payment_velocity`
+- `none`
+
+The current locked demo cases resolve as:
+
+- ANA_CASE_1 → independent signal present
+- ANA_CASE_2 → no independent signal
+- ANA_CASE_3 → independent signal present
+
+All institutional signals remain explicitly simulated.
+
+### Deterministic preservation rule
+
+The preservation rule is implemented in Python.
+
+The locked rule is:
+
+`hold_eligible = transaction_verified AND timely AND evidence_consistent AND independent_receiving_signal`
+
+AI does not authorize preservation.
+
+Ana's allegation alone does not authorize preservation.
+
+### Decision order
+
+The deterministic rule evaluates the report in this order:
+
+1. transaction verification;
+2. timeliness;
+3. AI evidence consistency;
+4. independent receiving-side evidence.
+
+Outcomes:
+
+- transaction not verified → `Stop: transaction cannot be verified`
+- report too late → `Preservation unavailable · restitution review continues`
+- evidence inconsistent or AI fails safely → `No automatic hold`
+- independent evidence missing → `Report verified · temporary preservation not authorized`
+- all four conditions true → `TEMPORARY HOLD ACTIVE — SIMULATED`
+
+### Locked demo behavior
+
+The deterministic demo behavior is:
+
+- ANA_CASE_1 → temporary simulated hold
+- ANA_CASE_2 → no hold + institutional review requested
+- ANA_CASE_3 → preservation unavailable
+
+### Transaction-specific scope
+
+Any eligible simulated hold applies only to:
+
+- the reported transaction reference;
+- the reported transaction amount.
+
+No account-wide freeze or account-wide action exists.
+
+### Tests
+
+Created:
+
+`tests/test_preservation.py`
+
+The Phase 5 test suite validates:
+
+- Case 1 receiving-side signal present;
+- Case 2 receiving-side signal absent;
+- Case 3 receiving-side signal present;
+- unknown reference has no independent signal;
+- transaction failure blocks preservation;
+- late report blocks preservation even with independent evidence;
+- inconsistent AI evidence blocks automatic hold;
+- no independent signal blocks preservation;
+- Case 1 reaches temporary simulated hold;
+- Case 2 reaches no hold + review;
+- Case 3 reaches preservation unavailable;
+- AI evidence cannot replace independent receiving-side evidence;
+- hold scope is reported transaction only;
+- all four locked conditions are required.
+
+Test result:
+
+`14 passed`
+
+### Scope boundary
+
+Phase 5 does not include:
+
+- final Streamlit outcome screens;
+- countdown;
+- ACTIVE / EXPIRED / ESCALATED hold lifecycle;
+- simulated expiry;
+- simulated escalation;
+- final deployed UI.
+
