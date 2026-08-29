@@ -284,6 +284,11 @@ Rules:
         return safe_failure("Gemini returned malformed JSON.")
 
     except Exception as exc:
+        print(
+            f"GEMINI_ERROR | {type(exc).__name__} | {exc}",
+            flush=True,
+        )
         return safe_failure(
-            f"Evidence structuring failed safely: {type(exc).__name__}"
+            f"Evidence structuring failed safely: "
+            f"{type(exc).__name__}: {exc}"
         )
