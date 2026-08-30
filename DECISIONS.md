@@ -1083,3 +1083,103 @@ Final usability conclusion:
 
 `Ana understands the operational logic once the outcome is shown, but the interface must translate system states into plain-language next steps for a person in crisis.`
 
+
+---
+
+## Mechanical Test Pass
+
+Status: Completed
+
+### Test plan execution
+
+The mechanical test plan was run after the full MVP was implemented.
+
+Final automated test result:
+
+`31 passed`
+
+The test suite covers:
+
+- transaction verification;
+- mismatched transaction blocking;
+- 30-minute timeliness boundary;
+- receiving-side signal lookup;
+- deterministic preservation authorization;
+- no hold without independent receiving-side evidence;
+- late-report blocking;
+- AI inconsistency blocking automatic preservation;
+- transaction-specific hold scope;
+- ACTIVE / EXPIRED / ESCALATED lifecycle;
+- countdown formatting;
+- mutual exclusivity of expiry and escalation.
+
+### Bug found and fixed
+
+At least one real implementation bug was found during testing.
+
+Examples encountered during the build included:
+
+- Gemini model availability mismatch;
+- provider-side structured-output instability;
+- image-processing timeout;
+- f-string JSON formatting error;
+- Gemini API quota failure during deployment.
+
+These issues were diagnosed, fixed where implementation-controlled, and re-tested.
+
+The final application preserves safe failure behavior when external AI processing is unavailable.
+
+### Security validation
+
+Input validation was strengthened after final review.
+
+Current user-input limits include:
+
+- transaction reference: maximum 50 characters;
+- recipient: maximum 100 characters;
+- narrative: maximum 1000 characters;
+- positive numeric amount required;
+- screenshot required;
+- supported image types restricted to PNG/JPG/JPEG.
+
+No real personal or banking data is used.
+
+No secrets are stored in the repository.
+
+---
+
+## Deployment Record
+
+### Deploy 1 — Functional prototype
+
+The first Streamlit Community Cloud deployment validated the initial working product flow:
+
+- synthetic demo cases;
+- visible report form;
+- transaction verification;
+- timeliness;
+- basic result states.
+
+This deployment was used to validate that the repository and Streamlit environment worked end-to-end.
+
+### Deploy 2 — Full MVP + persona refinement
+
+The later Streamlit Community Cloud deployment included:
+
+- Gemini evidence structuring;
+- independent receiving-side lookup;
+- deterministic preservation decision;
+- all three outcome states;
+- countdown;
+- expiry;
+- escalation;
+- improved user-facing language based on persona testing;
+- input validation limits;
+- security-floor checks.
+
+This deployment represents the final Week 3 MVP.
+
+Live URL:
+
+`https://ana-fast-lane-week3.streamlit.app`
+

@@ -280,6 +280,7 @@ def main():
     reference = st.text_input(
         "Transaction reference",
         value=case["reference"],
+        max_chars=50,
         help="In a real case, this would come from your transfer confirmation.",
     )
 
@@ -293,6 +294,7 @@ def main():
     recipient = st.text_input(
         "Recipient",
         value=case["recipient"],
+        max_chars=100,
     )
 
     transfer_age_minutes = st.number_input(
@@ -305,6 +307,7 @@ def main():
     narrative = st.text_area(
         "Tell us what happened",
         value="Me engañaron para hacer esta transferencia.",
+        max_chars=1000,
         help="A short explanation is enough for this prototype.",
     )
 
